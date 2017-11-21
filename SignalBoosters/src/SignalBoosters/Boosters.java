@@ -1,70 +1,89 @@
 package SignalBoosters;
 
+import java.lang.reflect.*;
+
 public class Boosters {
-    int fromleaf, fromparent;
-    boolean booster;
-    public Node root;
-    public Boosters(){
-    }
-    public Boosters(int a){
-        fromparent = a;
-    }
-    @Override
-    public String toString(){
-        return booster + " " + fromleaf + " " + fromparent;
-    }
-    public void insert(int id){
-        Node newnode = new Node();
-        newnode.element = id;
-        if(root == null)
-            root = newnode;
-        else{
-            Node current = root;
-            Node parent;
-            while(true){
-                parent = current;
-                if(id < current.element){
-                    current = current.left;
-                    if(current == null){
-                        parent.left = newnode;
-                        return;
-                    }
-                }
-                else{
-                    current = current.right;
-                    if(current == null){
-                        parent.right = newnode;
-                        return;
-                    }
-                }
-            }
+
+    public static class Booster {
+
+        int degradeToLeaf, degradeFromParent;
+        boolean boosterHere;
+
+        public Booster(int fromParent) {
+            degradeFromParent = fromParent;
+        }
+
+        public String toString() {
+            return boosterHere + " " + degradeToLeaf + " "
+                    + degradeFromParent;
         }
     }
-    public void place(Node x){
-        Boosters b = new Boosters(x.element);
-        b.fromleaf = 0;
-        Node y = x.left;
-        if(y != null){
-            Boosters boo = new Boosters(y.element);
-            int tolerance = 2;
-            int degrade = boo.fromleaf + boo.fromparent;
-            if(degrade > tolerance){
-                boo.booster = true;
-                boo.fromleaf = boo.fromparent;
+
+    static int tolerance;
+
+    public static void placeBoosters(BinaryTreeNode x) {
+        Booster elementX = (Booster) x.getElement();
+        elementX.degradeToLeaf = 0;
+
+        BinaryTreeNode y = x.getLeftChild();
+        if (y != null) {
+            Booster elementY = (Booster) y.getElement();
+            int degradation = elementY.degradeToLeaf
+                    + elementY.degradeFromParent;
+            if (degradation > tolerance) {
+                elementY.boosterHere = true;
+                elementX.degradeToLeaf = elementY.degradeFromParent;
+            } else {
+                elementX.degradeToLeaf = degradation;
             }
-            else
-                boo.fromleaf = degrade;
         }
-        y = x.right;
-        if(y != null){
-            Boosters bo = new Boosters(y.element);
-            int tolerance = 2;
-            int degrade = bo.fromleaf + bo.fromparent;
-            if(degrade > tolerance){
-                bo.booster = true;
-                degrade = bo.fromparent;
+
+        y = x.getRightChild();
+        if (y != null) {
+            Booster elementY = (Booster) y.getElement();
+            int degradation = elementY.degradeToLeaf
+                    + elementY.degradeFromParent;
+            if (degradation > tolerance) {
+                elementY.boosterHere = true;
+                degradation = elementY.degradeFromParent;
             }
-            b.fromleaf = Math.max(b.fromleaf, degrade);
+            elementX.degradeToLeaf = Math.max(elementX.degradeToLeaf,
+                    degradation);
         }
+    }
+
+    public static void main(String[] args) {
+
+        LinkedBinaryTree u = new LinkedBinaryTree();
+        LinkedBinaryTree x = new LinkedBinaryTree();
+        u.makeTree(new Booster(4), x, x);
+        LinkedBinaryTree v = new LinkedBinaryTree();
+        v.makeTree(new Booster(2), u, x);
+        u.makeTree(new Booster(3), x, x);
+        LinkedBinaryTree w = new LinkedBinaryTree();
+        w.makeTree(new Booster(1), u, x);
+        u.makeTree(new Booster(2), v, w);
+        v.makeTree(new Booster(3), x, x);
+        w.makeTree(new Booster(0), x, x);
+        LinkedBinaryTree y = new LinkedBinaryTree();
+        y.makeTree(new Booster(2), v, w);
+        w.makeTree(new Booster(1), x, x);
+        LinkedBinaryTree t = new LinkedBinaryTree();
+        t.makeTree(new Booster(0), y, w);
+        v.makeTree(new Booster(1), t, u); 
+
+        tolerance = 3;
+        Class[] paramType = {BinaryTreeNode.class};
+        // type of parameter for visit
+        Method thePlaceMethod = null;   // method to place boosters
+        System.out.println("Placement Signal Booster");
+        try {
+            Class pb = Boosters.class;
+            thePlaceMethod = pb.getMethod("placeBoosters", paramType);
+        } catch (Exception e) {
+        }
+
+        v.postOrder(thePlaceMethod);
+        v.postOrderOutput();
     }
 }
