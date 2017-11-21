@@ -4,8 +4,6 @@ import java.lang.reflect.InvocationTargetException;
 
 import java.lang.reflect.Method;
 
-import SignalBoosters.Boosters.Booster;
-
 
 
 public class LinkedBinaryTree extends BinaryTreeNode{
@@ -383,14 +381,5 @@ public class LinkedBinaryTree extends BinaryTreeNode{
         }
 
     }
-
-
-
-
-
-	public void makeTree2(Booster element, LinkedBinaryTree x, LinkedBinaryTree x2) {
-		// TODO Auto-generated method stub
-		
-	}
 
 }

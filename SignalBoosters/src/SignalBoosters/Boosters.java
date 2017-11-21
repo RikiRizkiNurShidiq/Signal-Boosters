@@ -4,7 +4,7 @@ import java.lang.reflect.*;
 
 public class Boosters {
 
-    public static class Booster {
+    private static class Booster {
 
         int degradeToLeaf, degradeFromParent;
         boolean boosterHere;
